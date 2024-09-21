@@ -85,27 +85,26 @@ QueryPictureRandomly() const
 void UNekoSplashSettings::
 ExecuteRandomSplash() const
 {
+	const FString NewSourceImagePath = QueryPictureRandomly();
+    if (NewSourceImagePath.IsEmpty()){
+    	return;
+    }
+    	
 	const FString TargetImagePath  = GetWindowsSplashFilename(EWindowsImageScope::GameOverride, true);
 	const FString DefaultImagePath = GetWindowsSplashFilename(EWindowsImageScope::Engine, true);
-	const FString TargetImagePathNoEx = FPaths::GetPath(TargetImagePath) / FPaths::GetBaseFilename(TargetImagePath);
+	const FString SplashFolder     = FPaths::GetPath(TargetImagePath);
+	const FString SplashName       = FPaths::GetBaseFilename(TargetImagePath);
 
-	const FString NewSourceImagePath = QueryPictureRandomly();
-	if (NewSourceImagePath.IsEmpty()){
-		return;
+	// Extension is hard to figure, so just remove them all, recreate file
+	TArray<FString> ExistSplashFileNames;
+	IFileManager::Get().FindFiles(
+		ExistSplashFileNames, *FPaths::Combine(SplashFolder, SplashName+TEXT(".*")), true, false);
+	for (const FString& Name : ExistSplashFileNames){
+		IFileManager::Get().Delete(*FPaths::Combine(SplashFolder, Name), false, true, true);
 	}
-
-	FString NewTargetImagePath = TargetImagePath;
-	if (FPaths::GetExtension(TargetImagePath) != FPaths::GetExtension(NewSourceImagePath))
-	{
-		IFileManager& FileManager = IFileManager::Get();
-		constexpr bool bRequireExists = false;
-		constexpr bool bEvenIfReadOnly = true;
-		constexpr bool bQuiet = true;
-		FileManager.Delete(*TargetImagePath, bRequireExists, bEvenIfReadOnly, bQuiet);
-		
-		NewTargetImagePath = TargetImagePathNoEx + TEXT(".") + FPaths::GetExtension(NewSourceImagePath);
-		ensureMsgf(
-			FileManager.Copy(*NewTargetImagePath, *NewSourceImagePath, true, true) == COPY_OK,
-			TEXT("Fail to override file %s"), *NewSourceImagePath);
-	}
+	
+	const FString NewTargetImagePath = FPaths::Combine(SplashFolder, SplashName + TEXT(".") + FPaths::GetExtension(NewSourceImagePath));
+	ensureMsgf(
+		IFileManager::Get().Copy(*NewTargetImagePath, *NewSourceImagePath, true, true) == COPY_OK,
+		TEXT("Fail to override file %s"), *NewSourceImagePath);
 }

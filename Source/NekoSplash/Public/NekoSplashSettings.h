@@ -34,4 +34,9 @@ private:
 	
 	UPROPERTY(EditAnywhere, Config, Category="Splash", meta=(EditCondition="bSwitchSplash"))
 	FDirectoryPath PictureLibrary;
+
+
+	virtual FName GetContainerName() const override { return TEXT("Project"); }
+	virtual FName GetCategoryName() const override  { return TEXT("Plugins"); }
+	virtual FName GetSectionName() const override   { return TEXT("Neko Splash"); }
 };
