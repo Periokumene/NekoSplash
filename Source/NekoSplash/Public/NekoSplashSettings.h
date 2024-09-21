@@ -14,19 +14,24 @@ class UNekoSplashSettings : public UDeveloperSettings
 public:
 	static const UNekoSplashSettings* Get();
 	static UNekoSplashSettings*       GetMutable();
+
+	bool CollectImages_Web  (TArray<FString>& Paths) const;
+	bool CollectImages_Local(TArray<FString>& Paths) const;
+
+	void    ExecuteRandomSplash() const;
 	FString QueryPictureRandomly() const;
+	
+	
+	UPROPERTY(EditAnywhere, Config, Category="Splash")
+	bool bSwitchSplash = true;
 
 private:
-	UPROPERTY(EditAnywhere, Config, Category="Splash")
-	bool bSwitchSplash;
+	UPROPERTY(EditAnywhere, Config, Category="Splash", DisplayName="Web API URL")
+	FString WebAPIUrl;
 
-	UPROPERTY(EditAnywhere, Config, Category="Splash", meta=(EditCondition="bSwitchSplash"))
-	FDirectoryPath SplashPictureLibrary;
-
-
-	UPROPERTY(EditAnywhere, Category="Debug")
-	bool bPostChangeTrigger;
-
+	UPROPERTY(EditAnywhere, Config, Category="Splash", DisplayName="Save Web Image to library")
+	bool bSaveWebImageToLocal;
 	
-	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+	UPROPERTY(EditAnywhere, Config, Category="Splash", meta=(EditCondition="bSwitchSplash"))
+	FDirectoryPath PictureLibrary;
 };

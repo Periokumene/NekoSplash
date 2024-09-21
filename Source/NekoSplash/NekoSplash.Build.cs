@@ -37,6 +37,11 @@ public class NekoSplash : ModuleRules
 				"SlateCore",
 				"DeveloperSettings",
 				"UnrealEd",
+				
+				// Forced to add to dependency because want to use GetWindowsSplashFilename() directly
+				"SharedSettingsWidgets",
+				"AudioSettingsEditor",
+				"EditorStyle",
 			}
 			);
 		
